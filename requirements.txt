@@ -1,9 +1,9 @@
 streamlit
-ultralytics
+ultralytics==8.2.0
 torch
 torchvision
-opencv-python
 numpy
 matplotlib
 pillow
 scikit-learn
+opencv-python-headless
