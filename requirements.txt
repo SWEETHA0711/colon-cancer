@@ -1,9 +1,0 @@
-streamlit
-ultralytics==8.2.0
-torch
-torchvision
-numpy
-matplotlib
-pillow
-scikit-learn
-opencv-python-headless
