@@ -12,6 +12,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 import warnings
+import os
 
 warnings.filterwarnings("ignore")
 
@@ -21,12 +22,18 @@ st.title("🧠 Colon Cancer Detection System")
 st.write("Upload an image to detect polyps and analyze cancer risk")
 
 # =========================
-# LOAD MODELS
+# LOAD MODELS (FIXED PATHS)
 # =========================
 @st.cache_resource
 def load_models():
 
-    yolo_model = YOLO("models/best.pt")
+    BASE_DIR = os.path.dirname(__file__)
+
+    # 🔥 FIXED PATH (Cloud + Local safe)
+    yolo_path = os.path.join(BASE_DIR, "colon-cancer-project", "models", "best.pt")
+    rf_path = os.path.join(BASE_DIR, "colon-cancer-project", "models", "rf_cancer_model.pkl")
+
+    yolo_model = YOLO(yolo_path)
 
     efficientnet = models.efficientnet_b0(
         weights=models.EfficientNet_B0_Weights.DEFAULT
@@ -42,9 +49,10 @@ def load_models():
                              std=[0.229,0.224,0.225])
     ])
 
-    rf_model = pickle.load(open("models/rf_cancer_model.pkl", "rb"))
+    rf_model = pickle.load(open(rf_path, "rb"))
 
     return yolo_model, efficientnet, transform, rf_model
+
 
 yolo_model, efficientnet, transform, rf_model = load_models()
 
@@ -58,7 +66,6 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file is not None:
 
-    # Convert image
     image = Image.open(uploaded_file)
     img_rgb = np.array(image)
 
@@ -125,10 +132,10 @@ if uploaded_file is not None:
         all_low_risk.append(low_risk)
 
         # =========================
-        # COLOR FIXED (IMPORTANT)
+        # COLOR FIXED
         # =========================
         if high_risk > low_risk:
-            color = (0, 0, 255)   # 🔴 RED (BGR format)
+            color = (0, 0, 255)   # 🔴 RED (BGR)
             risk_label = "HIGH RISK"
         else:
             color = (0, 255, 0)   # 🟢 GREEN
