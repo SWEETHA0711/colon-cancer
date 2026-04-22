@@ -41,9 +41,12 @@ def draw_box(img_array, box, label, color_rgb):
 def load_models():
     yolo_model = YOLO("models/best.pt")
 
-    efficientnet = models.efficientnet_b0(
-        weights=models.EfficientNet_B0_Weights.DEFAULT
-    )
+    try:
+        efficientnet = models.efficientnet_b0(
+            weights=models.EfficientNet_B0_Weights.DEFAULT
+        )
+    except Exception:
+        efficientnet = models.efficientnet_b0(pretrained=False)
     efficientnet = torch.nn.Sequential(*list(efficientnet.children())[:-1])
     efficientnet.eval()
 
