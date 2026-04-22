@@ -39,7 +39,15 @@ def draw_box(img_array, box, label, color_rgb):
 # =========================
 @st.cache_resource
 def load_models():
-    yolo_model = YOLO("models/best.pt")
+    import os
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    yolo_path = os.path.join(base_dir, "models", "best.pt")
+    rf_path = os.path.join(base_dir, "models", "rf_cancer_model.pkl")
+    if not os.path.exists(yolo_path):
+        st.error(f"Model not found: {yolo_path}"); st.stop()
+    if not os.path.exists(rf_path):
+        st.error(f"Model not found: {rf_path}"); st.stop()
+    yolo_model = YOLO(yolo_path)
 
     try:
         efficientnet = models.efficientnet_b0(
@@ -58,7 +66,7 @@ def load_models():
                              std=[0.229, 0.224, 0.225])
     ])
 
-    with open("models/rf_cancer_model.pkl", "rb") as f:
+    with open(rf_path, "rb") as f:
         rf_model = pickle.load(f)
 
     return yolo_model, efficientnet, transform, rf_model
